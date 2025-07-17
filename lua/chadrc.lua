@@ -4,9 +4,9 @@
 
 ---@type ChadrcConfig
 local M = {}
-
+local overrides = require("configs.overrides")
 M.base46 = {
-	theme = "onedark",
+	theme = "tokyonight",
 
 	-- hl_override = {
 	-- 	Comment = { italic = true },
@@ -20,5 +20,7 @@ M.base46 = {
 --          lazyload = false
 --      }
 --}
+
+M.ui = overrides.ui
 
 return M
