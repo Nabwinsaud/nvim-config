@@ -1,4 +1,4 @@
-local overrides = require("configs.overrides")
+local overrides = require "configs.overrides"
 
 return {
   -- Mason
@@ -9,95 +9,215 @@ return {
     opts = overrides.mason,
     config = function(_, opts)
       require("mason").setup(opts)
-      vim.cmd([[autocmd User MasonToolsUpdateCompleted ++once lua vim.notify("Mason tools updated")]])
+      vim.cmd [[autocmd User MasonToolsUpdateCompleted ++once lua vim.notify("Mason tools updated")]]
     end,
   },
 
   -- Treesitter
   {
-    'nvim-treesitter/nvim-treesitter',
-    event = { 'BufReadPost', 'BufNewFile' },
-    build = ':TSUpdate',
+    "nvim-treesitter/nvim-treesitter",
+    event = { "BufReadPost", "BufNewFile" },
+    build = ":TSUpdate",
     config = function()
-      require('nvim-treesitter.configs').setup(overrides.treesitter)
+      require("nvim-treesitter.configs").setup(overrides.treesitter)
     end,
   },
 
   -- Mason LSP Config
-  -- {
-  --   'williamboman/mason-lspconfig.nvim',
-  --   event = { 'BufReadPre', 'BufNewFile' },
-  --   dependencies = { 'williamboman/mason.nvim' },
-  --   config = function()
-  --     local lspconfig = require('lspconfig')
-  --     local capabilities = vim.lsp.protocol.make_client_capabilities()
-  --     capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
-  --
-  --     require('mason-lspconfig').setup({
-  --       ensure_installed = overrides.lspconfig.ensure_installed,
-  --       automatic_installation = true,
-  --     })
-  --
-  --     require('mason-lspconfig').setup_handlers {
-  --       function(server_name)
-  --         lspconfig[server_name].setup {
-  --           capabilities = capabilities,
-  --           on_attach = function(client, bufnr)
-  --             -- Optional: add your on_attach logic here
-  --           end,
-  --         }
-  --       end,
-  --     }
-  --   end,
-  -- },
-{
-  'williamboman/mason-lspconfig.nvim',
-  event = { 'BufReadPre', 'BufNewFile' },
-  dependencies = { 'williamboman/mason.nvim' },
-  config = function()
-    local lspconfig = require('lspconfig')
-    local mason_lspconfig = require('mason-lspconfig')
-    local overrides = require('configs.overrides')
-    local defaults = require("nvchad.configs.lspconfig").defaults
+  {
+    "williamboman/mason-lspconfig.nvim",
+    event = { "BufReadPre", "BufNewFile" },
+    dependencies = { "williamboman/mason.nvim" },
+    config = function()
+      local mason_lspconfig = require "mason-lspconfig"
+      local overrides = require "configs.overrides"
 
-    mason_lspconfig.setup({
-      ensure_installed = overrides.lspconfig.ensure_installed,
-      automatic_installation = true,
-    })
-
-    -- Loop over installed servers
-    for _, server_name in ipairs(overrides.lspconfig.ensure_installed) do
-      lspconfig[server_name].setup {
-        on_attach = defaults.on_attach,
-        capabilities = defaults.capabilities,
+      mason_lspconfig.setup {
+        ensure_installed = overrides.lspconfig.ensure_installed,
+        automatic_installation = true,
       }
-    end
-  end,
-},
+
+      -- The actual LSP server setup will be handled by nvim-lspconfig
+      -- The defaults are automatically applied by NvChad
+    end,
+  },
   -- LSP Config loader
   {
-    'neovim/nvim-lspconfig',
-    event = { 'BufReadPre', 'BufNewFile' },
+    "neovim/nvim-lspconfig",
+    event = { "BufReadPre", "BufNewFile" },
     config = function()
-      require('configs.lspconfig')
+      require "configs.lspconfig"
     end,
   },
 
   -- Formatter
   {
-    'stevearc/conform.nvim',
-    event = 'BufWritePre',
+    "stevearc/conform.nvim",
+    event = "BufWritePre",
     config = function()
-      require('conform').setup(require('configs.conform'))
+      require("conform").setup(require "configs.conform")
     end,
   },
-  -- escape key combo 
-{
-		"max397574/better-escape.nvim",
-		config = function()
-			require("better_escape").setup()
-		end,
-		lazy = false,
-	},
-}
+  -- escape key combo
+  {
+    "max397574/better-escape.nvim",
+    config = function()
+      require("better_escape").setup()
+    end,
+    lazy = false,
+  },
 
+  -- -- load luasnips + cmp related in insert mode only
+  {
+    "hrsh7th/nvim-cmp",
+    event = "InsertEnter",
+    dependencies = {
+      {
+        -- snippet plugin
+        "L3MON4D3/LuaSnip",
+        dependencies = "rafamadriz/friendly-snippets",
+        opts = { history = true, updateevents = "TextChanged,TextChangedI" },
+      },
+
+      -- autopairing of (){}[] etc
+      {
+        "windwp/nvim-autopairs",
+        opts = {
+          fast_wrap = {},
+          disable_filetype = { "TelescopePrompt", "vim" },
+        },
+        config = function(_, opts)
+          require("nvim-autopairs").setup(opts)
+
+          -- setup cmp for autopairs
+          local cmp_autopairs = require "nvim-autopairs.completion.cmp"
+          require("cmp").event:on("confirm_done", cmp_autopairs.on_confirm_done())
+        end,
+      },
+
+      -- cmp sources plugins
+      {
+        "saadparwaiz1/cmp_luasnip",
+        "hrsh7th/cmp-nvim-lua",
+        "hrsh7th/cmp-nvim-lsp",
+        "hrsh7th/cmp-buffer",
+        "hrsh7th/cmp-path",
+      },
+    },
+    opts = function()
+      return require "configs.cmp"
+    end,
+    config = function(_, opts)
+      require("cmp").setup(opts)
+    end,
+  },
+
+  -- Enhanced LSP UI
+  -- {
+  --   "nvimdev/lspsaga.nvim",
+  --   event = "LspAttach",
+  --   config = function()
+  --     require("lspsaga").setup({
+  --       ui = {
+  --         border = "single",
+  --       },
+  --       diagnostic = {
+  --         on_insert = false,
+  --         on_insert_follow = false,
+  --         insert_winblend = 0,
+  --         show_code_action = true,
+  --         show_source = true,
+  --         jump_num_shortcut = true,
+  --         max_width = 0.7,
+  --         custom_fix = nil,
+  --         custom_msg = nil,
+  --         text_hl_follow = false,
+  --         border_follow = true,
+  --         keys = {
+  --           exec_action = "o",
+  --           quit = "q",
+  --           go_action = "g"
+  --         },
+  --       },
+  --     })
+  --   end,
+  --   dependencies = {
+  --     "nvim-treesitter/nvim-treesitter",
+  --     "nvim-tree/nvim-web-devicons",
+  --   }
+  -- },
+  --
+  --
+  {
+    "nvimdev/lspsaga.nvim",
+    event = "LspAttach",
+    config = function()
+      require("lspsaga").setup {
+        ui = {
+          border = "rounded",
+          winblend = 10,
+          expand = "",
+          collapse = "",
+          code_action = "💡",
+          incoming = " ",
+          outgoing = " ",
+          hover = " ",
+          kind = {},
+        },
+        hover = {
+          max_width = 0.8,
+          max_height = 0.6,
+          open_link = "gx",
+          open_browser = "!chrome",
+        },
+        diagnostic = {
+          on_insert = false,
+          on_insert_follow = false,
+          insert_winblend = 0,
+          show_code_action = true,
+          show_source = true,
+          jump_num_shortcut = true,
+          max_width = 0.7,
+          custom_fix = nil,
+          custom_msg = nil,
+          text_hl_follow = false,
+          border_follow = true,
+          keys = {
+            exec_action = "o",
+            quit = "q",
+            go_action = "g",
+          },
+        },
+        code_action = {
+          num_shortcut = true,
+          show_server_name = false,
+          extend_gitsigns = true,
+          keys = {
+            quit = "q",
+            exec = "<CR>",
+          },
+        },
+        lightbulb = {
+          enable = true,
+          enable_in_insert = true,
+          sign = true,
+          sign_priority = 40,
+          virtual_text = true,
+        },
+        preview = {
+          lines_above = 0,
+          lines_below = 10,
+        },
+        scroll_preview = {
+          scroll_down = "<C-f>",
+          scroll_up = "<C-b>",
+        },
+        request_timeout = 2000,
+      }
+    end,
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "nvim-tree/nvim-web-devicons",
+    },
+  },
+}

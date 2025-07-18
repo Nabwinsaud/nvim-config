@@ -1,13 +1,32 @@
-
 local M = {}
 
 -- Treesitter parsers
 M.treesitter = {
   ensure_installed = {
-    'bash', 'c', 'comment', 'cpp', 'css', 'dockerfile',
-    'gitignore', 'go', 'gomod', 'gowork', 'html', 'javascript',
-    'json', 'jsonc', 'lua', 'luap', 'make', 'markdown',
-    'markdown_inline', 'sql', 'tsx', 'typescript', 'vim', 'vimdoc',
+    "bash",
+    "c",
+    "comment",
+    "cpp",
+    "css",
+    "dockerfile",
+    "gitignore",
+    "go",
+    "gomod",
+    "gowork",
+    "html",
+    "javascript",
+    "json",
+    "jsonc",
+    "lua",
+    "luap",
+    "make",
+    "markdown",
+    "markdown_inline",
+    "sql",
+    "tsx",
+    "typescript",
+    "vim",
+    "vimdoc",
   },
   highlight = {
     enable = true,
@@ -18,10 +37,10 @@ M.treesitter = {
   incremental_selection = {
     enable = true,
     keymaps = {
-      init_selection = 'gnn',
-      node_incremental = 'grn',
-      scope_incremental = 'grc',
-      node_decremental = 'grm',
+      init_selection = "gnn",
+      node_incremental = "grn",
+      scope_incremental = "grc",
+      node_decremental = "grm",
     },
   },
 }
@@ -50,6 +69,7 @@ M.mason = {
     "goimports-reviser",
     "shellcheck",
     "shellharden",
+    "biome",
   },
 }
 
@@ -62,6 +82,9 @@ M.lspconfig = {
     "cssls",
     "clangd",
     "gopls",
+    -- formatters
+    "biome",
+    "eslint",
   },
 }
 
