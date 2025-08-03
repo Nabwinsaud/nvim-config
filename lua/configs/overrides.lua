@@ -55,6 +55,12 @@ M.mason = {
     "clangd",
     "gopls",
 
+    -- json / yaml / toml / markdown servers
+    "json-lsp",
+    "yaml-language-server",
+    "markdownlint",
+    "taplo", -- toml
+
     -- Formatters/linters/DAP/debuggers
     "stylua",
     "clang-format",
@@ -69,7 +75,6 @@ M.mason = {
     "goimports-reviser",
     "shellcheck",
     "shellharden",
-    "biome",
   },
 }
 
@@ -85,6 +90,11 @@ M.lspconfig = {
     -- formatters
     "biome",
     "eslint",
+
+    "jsonls",
+    "yamlls",
+    "taplo", -- toml
+    "markdownlint",
   },
 }
 

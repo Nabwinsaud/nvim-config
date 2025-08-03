@@ -58,6 +58,26 @@ return {
       require("conform").setup(require "configs.conform")
     end,
   },
+
+  {
+    "github/copilot.vim",
+    event = "VeryLazy",
+    config = function()
+      -- Disable default tab mapping
+      vim.g.copilot_no_tab_map = true
+
+      vim.cmd [[
+      imap <silent><script><expr> <C-p> copilot#Accept("\<CR>")
+    ]]
+      vim.api.nvim_set_keymap("i", "<M-]>", "<Plug>(copilot-next)", { silent = true })
+      vim.api.nvim_set_keymap("i", "<M-[>", "<Plug>(copilot-previous)", { silent = true })
+      vim.api.nvim_set_keymap("i", "<M-\\>", "<Plug>(copilot-dismiss)", { silent = true })
+
+      vim.g.copilot_filetypes = {
+        ["*"] = true,
+      }
+    end,
+  },
   -- escape key combo
   {
     "max397574/better-escape.nvim",
@@ -112,41 +132,6 @@ return {
     end,
   },
 
-  -- Enhanced LSP UI
-  -- {
-  --   "nvimdev/lspsaga.nvim",
-  --   event = "LspAttach",
-  --   config = function()
-  --     require("lspsaga").setup({
-  --       ui = {
-  --         border = "single",
-  --       },
-  --       diagnostic = {
-  --         on_insert = false,
-  --         on_insert_follow = false,
-  --         insert_winblend = 0,
-  --         show_code_action = true,
-  --         show_source = true,
-  --         jump_num_shortcut = true,
-  --         max_width = 0.7,
-  --         custom_fix = nil,
-  --         custom_msg = nil,
-  --         text_hl_follow = false,
-  --         border_follow = true,
-  --         keys = {
-  --           exec_action = "o",
-  --           quit = "q",
-  --           go_action = "g"
-  --         },
-  --       },
-  --     })
-  --   end,
-  --   dependencies = {
-  --     "nvim-treesitter/nvim-treesitter",
-  --     "nvim-tree/nvim-web-devicons",
-  --   }
-  -- },
-  --
   --
   {
     "nvimdev/lspsaga.nvim",
@@ -219,5 +204,63 @@ return {
       "nvim-treesitter/nvim-treesitter",
       "nvim-tree/nvim-web-devicons",
     },
+  },
+
+  -- nvim db
+  {
+    "tpope/vim-dadbod",
+    cmd = "DB",
+  },
+  {
+    "kristijanhusak/vim-dadbod-ui",
+    dependencies = {
+      { "tpope/vim-dadbod", lazy = true },
+      { "kristijanhusak/vim-dadbod-completion", ft = { "sql", "mysql", "plsql" }, lazy = true },
+    },
+    cmd = {
+      "DBUI",
+      "DBUIToggle",
+      "DBUIAddConnection",
+      "DBUIFindBuffer",
+    },
+    init = function()
+      -- Configuration
+      vim.g.db_ui_use_nerd_fonts = 1
+      vim.g.db_ui_save_location = vim.fn.stdpath "data" .. "/dadbod_ui"
+      vim.g.db_ui_show_database_icon = true
+      vim.g.db_ui_tmp_query_location = vim.fn.stdpath "data" .. "/dadbod_ui/tmp"
+      vim.g.db_ui_execute_on_save = false
+      vim.g.db_ui_auto_execute_table_helpers = 1
+      vim.g.db_ui_use_nvim_notify = true
+
+      -- vim.g.dbs = {
+      --   dev = "postgres://username:password@localhost:5432/dev_db",
+      --   staging = "postgres://username:password@localhost:5432/staging_db",
+      --   production = "postgres://username:password@localhost:5432/prod_db",
+      -- }
+      --
+    end,
+    keys = {
+      { "<leader>D", "<cmd>DBUIToggle<CR>", desc = "Toggle DBUI" },
+    },
+  },
+  {
+    "kristijanhusak/vim-dadbod-completion",
+    dependencies = "vim-dadbod",
+    ft = { "sql", "mysql", "plsql" },
+    init = function()
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = { "sql", "mysql", "plsql" },
+        callback = function()
+          local cmp = require "cmp"
+          local sources = vim.tbl_map(function(source)
+            return { name = source.name }
+          end, cmp.get_config().sources)
+
+          table.insert(sources, { name = "vim-dadbod-completion" })
+          cmp.setup.buffer { sources = sources }
+        end,
+      })
+    end,
   },
 }

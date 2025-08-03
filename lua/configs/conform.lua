@@ -1,81 +1,34 @@
--- local options = {
---   formatters_by_ft = {
---     lua = { "stylua" },
---
---     -- JavaScript/TypeScript with Biome as primary, ESLint as fallback
---     javascript = { "biome", "eslint_d" },
---     javascriptreact = { "biome", "eslint_d" },
---     typescript = { "biome", "eslint_d" },
---     typescriptreact = { "biome", "eslint_d" },
---
---     -- Go formatting
---     go = { "gofmt", "goimports" },
---
---     -- Other web formats
---     json = { "biome" },
---     jsonc = { "biome" },
---     css = { "biome" },
---     scss = { "biome" },
---     html = { "biome" },
---     markdown = { "biome" },
---   },
---
---   -- Enable format on save
---   format_on_save = {
---     timeout_ms = 500,
---     lsp_fallback = true,
---   },
---
---   -- Custom formatter configurations
---   formatters = {
---     biome = {
---       condition = function(ctx)
---         return vim.fs.find({ "biome.json", "biome.jsonc" }, { path = ctx.filename, upward = true })[1]
---       end,
---     },
---     eslint_d = {
---       condition = function(ctx)
---         return vim.fs.find({
---           ".eslintrc.js",
---           ".eslintrc.json",
---           ".eslintrc.yaml",
---           ".eslintrc.yml",
---           "eslint.config.js",
---           "eslint.config.mjs",
---         }, { path = ctx.filename, upward = true })[1]
---       end,
---     },
---   },
--- }
---
--- return options
---
---
 local options = {
   formatters_by_ft = {
     lua = { "stylua" },
 
-    -- JavaScript/TypeScript with Biome as primary, ESLint as fallback
-    javascript = { "biome", "eslint_d" },
-    javascriptreact = { "biome", "eslint_d" },
-    typescript = { "biome", "eslint_d" },
-    typescriptreact = { "biome", "eslint_d" },
+    -- Use only Prettier for formatting, let ESLint handle linting separately
+    javascript = { "prettier" },
+    javascriptreact = { "prettier" },
+    typescript = { "prettier" },
+    typescriptreact = { "prettier" },
 
-    -- Go formatting (enhanced)
-    go = { "goimports", "gofmt", "gofumpt" },
+    -- Go formatters
+    go = { "gofumpt", "goimports" },
 
-    -- Other web formats
-    json = { "biome" },
-    jsonc = { "biome" },
-    css = { "biome" },
-    scss = { "biome" },
-    html = { "biome" },
-    markdown = { "biome" },
+    -- Other file types
+    json = { "prettier" },
+    jsonc = { "prettier" },
+    css = { "prettier" },
+    scss = { "prettier" },
+    html = { "prettier" },
+    markdown = { "prettier" },
   },
 
   format_on_save = {
-    timeout_ms = 500,
-    lsp_fallback = true,
+    -- Increased timeout for slower systems
+    timeout_ms = 2000,
+    -- Don't fall back to LSP formatting to avoid conflicts
+    lsp_fallback = false,
+    -- Run formatting asynchronously to prevent blocking
+    async = true,
+    -- Don't show notifications for successful formatting
+    quiet = true,
   },
 
   -- Logging level to see which formatter is used
@@ -84,28 +37,45 @@ local options = {
   notify_no_formatters = true,
 
   formatters = {
-    biome = {
-      -- Remove the condition to allow Biome to run without config file
-      -- Biome has sane defaults and works without biome.json
-      prepend_args = { "--stdin-file-path", "$FILENAME" },
+    -- Go formatters
+    goimports = {
+      prepend_args = { "-local", "$(go list -m)" },
     },
-    eslint_d = {
+    gofumpt = {
+      prepend_args = { "-extra" },
+    },
+    
+    -- Prettier configuration
+    prettier = {
+      command = "prettier",
+      args = { "--stdin-filepath", "$FILENAME" },
+      -- Only run Prettier if there's a config file
       condition = function(ctx)
         return vim.fs.find({
+          ".prettierrc",
+          ".prettierrc.js",
+          ".prettierrc.json",
+          "prettier.config.js",
+        }, { path = ctx.filename, upward = true })[1] ~= nil
+      end,
+    },
+    
+    -- ESLint configuration (only for linting, not formatting)
+    eslint_d = {
+      -- Only run if eslint_d is available
+      command = "eslint_d",
+      -- Only run if there's an ESLint config file
+      condition = function(ctx)
+        return vim.fs.find({
+          ".eslintrc",
           ".eslintrc.js",
           ".eslintrc.json",
           ".eslintrc.yaml",
           ".eslintrc.yml",
           "eslint.config.js",
           "eslint.config.mjs",
-        }, { path = ctx.filename, upward = true })[1]
+        }, { path = ctx.filename, upward = true })[1] ~= nil
       end,
-    },
-    gofumpt = {
-      prepend_args = { "-extra" }, -- More aggressive formatting
-    },
-    goimports = {
-      prepend_args = { "-local", vim.fn.getcwd() },
     },
   },
 }
