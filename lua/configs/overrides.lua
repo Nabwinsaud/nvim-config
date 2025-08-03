@@ -27,6 +27,9 @@ M.treesitter = {
     "typescript",
     "vim",
     "vimdoc",
+
+    -- prisma
+    "prisma",
   },
   highlight = {
     enable = true,
@@ -58,8 +61,8 @@ M.mason = {
     -- json / yaml / toml / markdown servers
     "json-lsp",
     "yaml-language-server",
-    "markdownlint",
     "taplo", -- toml
+    "markdownlint",
 
     -- Formatters/linters/DAP/debuggers
     "stylua",
@@ -75,6 +78,9 @@ M.mason = {
     "goimports-reviser",
     "shellcheck",
     "shellharden",
+
+    -- orm/prism
+    "prisma-language-server",
   },
 }
 
@@ -95,6 +101,9 @@ M.lspconfig = {
     "yamlls",
     "taplo", -- toml
     "markdownlint",
+
+    -- orm/prism
+    "prismals",
   },
 }
 

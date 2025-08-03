@@ -25,3 +25,16 @@ local function setup_enhanced_lsp_keymaps()
 end
 
 setup_enhanced_lsp_keymaps()
+
+-- Keymaps for navigating and managing TODO comments
+vim.keymap.set("n", "]t", function()
+  require("todo-comments").jump_next()
+end, { desc = "Next todo comment" })
+
+vim.keymap.set("n", "[t", function()
+  require("todo-comments").jump_prev()
+end, { desc = "Previous todo comment" })
+
+vim.keymap.set("n", "<leader>ft", "<cmd>TodoTelescope<cr>", { desc = "Find todos" })
+vim.keymap.set("n", "<leader>fq", "<cmd>TodoQuickFix<cr>", { desc = "Find todos (quickfix)" })
+vim.keymap.set("n", "<leader>fl", "<cmd>TodoLocList<cr>", { desc = "Find todos (loclist)" })
