@@ -30,6 +30,9 @@ M.treesitter = {
 
     -- prisma
     "prisma",
+    -- proto
+    "proto",
+    "yaml",
   },
   highlight = {
     enable = true,
@@ -104,6 +107,8 @@ M.lspconfig = {
 
     -- orm/prism
     "prismals",
+    --  proto
+    "bufls",
   },
 }
 

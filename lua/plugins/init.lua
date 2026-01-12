@@ -132,7 +132,7 @@ return {
     end,
   },
 
-  -- Lspsaga 
+  -- Lspsaga
   {
     "nvimdev/lspsaga.nvim",
     event = "LspAttach",

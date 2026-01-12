@@ -45,3 +45,9 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagn
   underline = true,
   update_in_insert = false,
 })
+
+-- lspconfig.buf_ls.setup {
+--   cmd = { "bufls", "lsp" },
+--   filetypes = { "proto" },
+--   root_dir = util.root_pattern("buf.work", "buf.work.yaml", ".git"),
+-- }
