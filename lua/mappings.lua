@@ -39,3 +39,16 @@ end, { desc = "Previous todo comment" })
 vim.keymap.set("n", "<leader>ft", "<cmd>TodoTelescope<cr>", { desc = "Find todos" })
 vim.keymap.set("n", "<leader>fq", "<cmd>TodoQuickFix<cr>", { desc = "Find todos (quickfix)" })
 vim.keymap.set("n", "<leader>fl", "<cmd>TodoLocList<cr>", { desc = "Find todos (loclist)" })
+
+-- Git hunk navigation (similar to diagnostic navigation)
+vim.keymap.set("n", "[c", function()
+  if vim.wo.diff then return "[c" end
+  vim.schedule(function() require("gitsigns").prev_hunk() end)
+  return "<Ignore>"
+end, { desc = "Previous git hunk", expr = true })
+
+vim.keymap.set("n", "]c", function()
+  if vim.wo.diff then return "]c" end
+  vim.schedule(function() require("gitsigns").next_hunk() end)
+  return "<Ignore>"
+end, { desc = "Next git hunk", expr = true })

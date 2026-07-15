@@ -1,4 +1,3 @@
-local lspconfig = require "lspconfig"
 local border = {
   { "╭", "FloatBorder" },
   { "─", "FloatBorder" },
@@ -46,8 +45,14 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagn
   update_in_insert = false,
 })
 
--- lspconfig.buf_ls.setup {
---   cmd = { "bufls", "lsp" },
---   filetypes = { "proto" },
---   root_dir = util.root_pattern("buf.work", "buf.work.yaml", ".git"),
--- }
+-- Buf LSP setup using autocmd for manual attachment
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "proto",
+  callback = function(args)
+    vim.lsp.start({
+      name = "buf_ls",
+      cmd = { "buf", "lsp", "serve" },
+      root_dir = vim.fs.root(args.buf, { ".git", "buf.work.yaml", "buf.yaml" }) or vim.fs.dirname(vim.api.nvim_buf_get_name(args.buf)),
+    })
+  end,
+})

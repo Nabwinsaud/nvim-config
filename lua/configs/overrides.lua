@@ -103,12 +103,10 @@ M.lspconfig = {
     "jsonls",
     "yamlls",
     "taplo", -- toml
-    "markdownlint",
+    "marksman", -- markdown
 
     -- orm/prism
     "prismals",
-    --  proto
-    "bufls",
   },
 }
 
