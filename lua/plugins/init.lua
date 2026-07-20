@@ -1,6 +1,45 @@
 local overrides = require "configs.overrides"
 
 return {
+  -- Use Neo-tree instead of NvChad's bundled nvim-tree.
+  {
+    "nvim-tree/nvim-tree.lua",
+    enabled = false,
+  },
+  {
+    "nvim-neo-tree/neo-tree.nvim",
+    branch = "v3.x",
+    cmd = "Neotree",
+    keys = {
+      { "<C-n>", "<cmd>Neotree toggle<CR>", desc = "Toggle Neo-tree" },
+      { "<leader>e", "<cmd>Neotree focus<CR>", desc = "Focus Neo-tree" },
+    },
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
+      "nvim-tree/nvim-web-devicons",
+    },
+    opts = {
+      close_if_last_window = true,
+      enable_git_status = true,
+      enable_diagnostics = true,
+      filesystem = {
+        follow_current_file = {
+          enabled = true,
+        },
+        use_libuv_file_watcher = true,
+        filtered_items = {
+          hide_dotfiles = false,
+          hide_gitignored = false,
+        },
+      },
+      window = {
+        width = 35,
+        position = "left",
+      },
+    },
+  },
+
   -- Mason
   {
     "williamboman/mason.nvim",
@@ -122,13 +161,23 @@ return {
         "hrsh7th/cmp-nvim-lsp",
         "hrsh7th/cmp-buffer",
         "hrsh7th/cmp-path",
+        "hrsh7th/cmp-cmdline",
       },
     },
     opts = function()
       return require "configs.cmp"
     end,
     config = function(_, opts)
-      require("cmp").setup(opts)
+      local cmp = require("cmp")
+      cmp.setup(opts)
+      cmp.setup.cmdline(":", {
+        mapping = cmp.mapping.preset.cmdline(),
+        sources = cmp.config.sources({
+          { name = "path" },
+        }, {
+          { name = "cmdline" },
+        }),
+      })
     end,
   },
 
@@ -324,5 +373,46 @@ return {
         },
       }
     end,
+  },
+
+  -- Noice plugin for better UI
+  {
+    "folke/noice.nvim",
+    event = "VeryLazy",
+    opts = {
+      lsp = {
+        hover = {
+          enabled = false, -- let NvChad handle hover
+        },
+        signature = {
+          enabled = false, -- let NvChad handle signature help
+        },
+        message = {
+          enabled = false, -- let NvChad handle LSP messages
+        },
+        -- Remove overrides to ensure native floating windows work as expected
+        override = {
+          ["vim.lsp.util.convert_input_to_markdown_lines"] = false,
+          ["vim.lsp.util.stylize_markdown"] = false,
+          ["cmp.entry.get_documentation"] = false,
+        },
+      },
+      -- you can enable a preset for easier configuration
+      presets = {
+        bottom_search = true, -- use a classic bottom cmdline for search
+        command_palette = true, -- position the cmdline and popupmenu together
+        long_message_to_split = true, -- long messages will be sent to a split
+        inc_rename = false, -- enables an input dialog for inc-rename.nvim
+        lsp_doc_border = true, -- add a border to hover docs and signature help
+      },
+    },
+    dependencies = {
+      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+      "MunifTanjim/nui.nvim",
+      -- OPTIONAL:
+      --   `nvim-notify` is only needed, if you want to use the notification view.
+      --   If not available, we use `mini` as the fallback
+      "rcarriga/nvim-notify",
+    }
   },
 }

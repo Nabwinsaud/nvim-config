@@ -22,6 +22,13 @@ M.base46 = {
 --      }
 --}
 
-M.ui = overrides.ui
+M.ui = overrides.ui or {}
+
+M.term = {
+  sizes = {
+    vsp = 0.5,
+    ["bo vsp"] = 0.5,
+  },
+}
 
 return M
