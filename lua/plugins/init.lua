@@ -23,6 +23,7 @@ return {
       close_if_last_window = true,
       enable_git_status = true,
       enable_diagnostics = true,
+      popup_border_style = "rounded",
       filesystem = {
         follow_current_file = {
           enabled = true,
@@ -38,6 +39,20 @@ return {
         position = "left",
       },
     },
+    config = function(_, opts)
+      require("neo-tree").setup(opts)
+
+      -- NvChad does not define Neo-tree's highlight groups by default.
+      -- Link them explicitly so file rows and input popups stay visible.
+      vim.api.nvim_set_hl(0, "NeoTreeNormal", { link = "Normal" })
+      vim.api.nvim_set_hl(0, "NeoTreeNormalNC", { link = "Normal" })
+      vim.api.nvim_set_hl(0, "NeoTreeFileName", { link = "Normal" })
+      vim.api.nvim_set_hl(0, "NeoTreeDirectoryName", { link = "Directory" })
+      vim.api.nvim_set_hl(0, "NeoTreeRootName", { link = "Title" })
+      vim.api.nvim_set_hl(0, "NuiInputNormal", { link = "NormalFloat" })
+      vim.api.nvim_set_hl(0, "NuiInputBorder", { link = "FloatBorder" })
+      vim.api.nvim_set_hl(0, "NuiInputTitle", { link = "Title" })
+    end,
   },
 
   -- Mason
