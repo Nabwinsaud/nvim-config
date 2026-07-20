@@ -2,6 +2,10 @@ require "nvchad.mappings"
 
 local map = vim.keymap.set
 
+-- Replace NvChad's nvim-tree mappings because nvim-tree is disabled.
+map("n", "<C-n>", "<cmd>Neotree toggle<CR>", { desc = "Toggle Neo-tree" })
+map("n", "<leader>e", "<cmd>Neotree focus<CR>", { desc = "Focus Neo-tree" })
+
 map("n", ";", ":", { desc = "CMD enter command mode" })
 map("i", "jk", "<ESC>")
 
